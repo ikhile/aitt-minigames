@@ -1,10 +1,13 @@
 import processing.video.*;
 import gab.opencv.*;
+import java.awt.Rectangle;
 
 // Pages
 Page currentPage;
 StartPage startPage;
 HomePage home;
+FlappyBirdIntro fbi;
+FlappyBird fb;
 
 // OpenCV
 OpenCV opencv;
@@ -21,7 +24,13 @@ void setup() {
   // Pages
   startPage = new StartPage();
   home = new HomePage();
-  currentPage = home;
+  
+  
+  
+  // games
+  fbi = new FlappyBirdIntro();
+  fb = new FlappyBird();
+  currentPage = fb;
   
   // OpenCV and Camera
   initCamera(width, height);

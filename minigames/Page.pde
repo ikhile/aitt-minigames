@@ -1,5 +1,5 @@
 class Page {
-  boolean usesFlow = true;
+  boolean usesFlow = false;
   void draw() {}  
   void mousePressed() {}
   void keyPressed() {}
