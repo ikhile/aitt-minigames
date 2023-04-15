@@ -36,6 +36,11 @@ class FlappyBird extends Page {
     
     if (gameOver) {
       drawWebcamMirrored(); // without calling cam.read() first this displays the last frame before game ended, which I think is kinda fun
+      
+      // draw the game just don't move it
+      for (FlappyBirdObstacle obstacle : obstacles) obstacle.draw();      
+      player.draw();
+      
       noStroke(); fill(255, 255, 255, 150);
       rectMode(CENTER); rect(width / 2, height / 2, width, height);
       
@@ -93,6 +98,7 @@ class FlappyBird extends Page {
         else if (obstacle.hasHitPlayer(player)) {
           gameOver = true;
           updateHighScore();
+          updateLeaderboard();
         }
         
         if (obstacle.passed && obstacle.x + obstacle.w < 0) {
@@ -149,6 +155,25 @@ class FlappyBird extends Page {
     
     saveJSONObject(data, dataPath);    
   }
+ 
+  void updateLeaderboard() {
+    
+    JSONArray leaderboard = data.getJSONObject("flappy-bird").getJSONArray("leaderboard");
+    JSONObject newEntry = new JSONObject();
+    String date = year() + "-" + month() + "-" + day();
+    println(date);
+    newEntry.setString("date", date);
+    newEntry.setInt("score", score);
+    
+    leaderboard.append(newEntry);
+    
+    data.getJSONObject("flappy-bird").setJSONArray("leaderboard", leaderboard);
+    saveJSONObject(data, dataPath);
+    
+    println(leaderboard);
+    println(data);
+    
+  }
 }
 
 class FlappyBirdPlayer {
@@ -162,11 +187,11 @@ class FlappyBirdPlayer {
   
   FlappyBirdPlayer() {
     img = loadImage("placeholder.png");
+    setXValues();
   }
   
   void setYPos(int y) {
     this.y = y;
-    setXValues();
   }
   
   void setPos(int x, int y) {
@@ -218,7 +243,8 @@ class FlappyBirdObstacle {
   }
   
   boolean hasHitPlayer(FlappyBirdPlayer player) {
-    if (x <= player.minX && x + w >= player.maxX) {
+    //if (x >= player.minX && x + w <= player.maxX) {
+      if (player.minX >= x && player.maxX <= x + w) {
     //if (x >= player.x - player.w / 2 && x + w <= player.maxX) {
       println("player in obstacle");
       if (player.y - player.h / 2 <= gapUpper || player.y + player.h / 2 >= gapLower) {

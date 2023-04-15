@@ -24,6 +24,9 @@ void setup() {
   //fullScreen();
   size (960, 540);
   
+  data = loadJSONObject(dataPath);
+
+  
   // Pages
   startPage = new StartPage();
   homePage = new HomePage();
@@ -38,7 +41,6 @@ void setup() {
   opencv = new OpenCV(this, cam.width, cam.height);
   surface.setResizable(true);
   
-  data = loadJSONObject(dataPath);
 }
 
 void draw() {
