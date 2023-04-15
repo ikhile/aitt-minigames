@@ -1,102 +1,153 @@
 int fbPlayerHeight = 50;
+int minGapStartY = 100;
+float minGapMultiplier = 2.0f;
 
 class FlappyBird extends Page {
-  Rectangle[] faces;
   Rectangle face;
+  Rectangle[] faces;
   
-  float scrollSpeed = 5;
-  float newObstacleMillis = 3000;
-  float lastObstacleMillis = 0;
   int score = 0;
+  int highScore;
+  boolean gameOver = false;
+  boolean paused = false;
+  boolean newHighScore = false;
+  
+  float scrollSpeed;
+  float obstacleGap = 300;  
+  float obstacleMinGap = 250;
+  float obstacleMaxGap = 400;
   boolean removeObstacle = false;
   
-  float obstacleGap = 300;
-  
-  FlappyBirdPlayer player;
-  FlappyBirdObstacle test;
-  
+  RectTextButton playAgain = new RectTextButton("Play Again", width / 2 + 60, height / 2 + 70, 100, 50);;
+  RectTextButton home= new RectTextButton("Home", width / 2 - 60, height / 2 + 70, 100, 50);
+  RectTextButton pause = new RectTextButton("Pause", width - 120, 35, 100, 50);
+
+  FlappyBirdPlayer player = new FlappyBirdPlayer();
   ArrayList<FlappyBirdObstacle> obstacles = new ArrayList<FlappyBirdObstacle>();
   
   FlappyBird() {
-    player = new FlappyBirdPlayer();
-    test = new FlappyBirdObstacle();
-    
-    obstacles.add(new FlappyBirdObstacle());
-    obstacles.get(0).setXPos(obstacles.get(0).x - obstacles.get(0).w); 
+    reset();
   }
   
   void draw() {
     background(200);
     textSize(g.textSize); // src: https://forum.processing.org/two/discussion/12660/is-there-a-way-to-access-the-default-textsize.html
-    //text("flappy bird game", width / 2, height / 2);
     
-    cam.read();
-    opencv.loadImage((PImage)cam);  
-    drawWebcamMirrored();
-    opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);
-    faces = opencv.detect();
     
-    println(faces.length);
-    if (faces.length > 0) {
-      for (int i = 0; i < faces.length; i++) {
-        stroke(i == 0 ? 255 : 0, 0, 0); noFill(); rectMode(CORNER);
+    if (gameOver) {
+      drawWebcamMirrored(); // without calling cam.read() first this displays the last frame before game ended, which I think is kinda fun
+      noStroke(); fill(255, 255, 255, 150);
+      rectMode(CENTER); rect(width / 2, height / 2, width, height);
+      
+      stroke(0); strokeWeight(3); fill(0, 0, 0, 50);
+      rect(width / 2, height / 2, width - 150, height - 150);
+      
+      fill(255);
+      textAlign(CENTER, CENTER);
+      text("GAME OVER", width / 2, height / 2 - 50);
+      text("score: " + score, width / 2, height / 2);
+      text((newHighScore ? "NEW " : "") + "High score: " + highScore, width / 2, height / 2 + 15);
+      
+      playAgain.draw();
+      home.draw();
+      
+
+    } else {
+      cam.read();
+      opencv.loadImage((PImage)cam);  
+      drawWebcamMirrored();
+      opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);
+      faces = opencv.detect();
+      
+      if (faces.length > 0) {
+        for (int i = 0; i < faces.length; i++) {
+          stroke(i == 0 ? 255 : 0, 0, 0); noFill(); rectMode(CORNER);
+          
+          // scale same as mirrored webcam image
+          pushMatrix();
+          scale(-1, 1);
+            // must add negative width to x to mirror
+            rect(faces[i].x - width, faces[i].y, faces[i].width, faces[i].height);
+          popMatrix();
+        }
         
-        // scale same as mirrored webcam image
-        pushMatrix();
-        scale(-1, 1);
-          // subtract width from x to mirror
-          rect(faces[i].x - width, faces[i].y, faces[i].width, faces[i].height);
-        popMatrix();
+        face = faces[0];
+        player.setYPos(face.y + face.height / 2); // centre Y of face
       }
       
-      face = faces[0];
-      player.setYPos(face.y + face.height / 2); // centre Y of face
-    }
-    
-    //test.draw();
-    
-    
-    if (faces.length == 0) {
-      textSize(24); fill(255);
-      text("Please move your face into the frame", width / 2, height / 2);
-      
-      // could eventually implement a lil (no face detected for 3 seconds :. pause)
-    }
-    
-    //test.move(scrollSpeed);
-    
-    //if (millis() - lastObstacleMillis >= newObstacleMillis) {
-    //    obstacles.add(new FlappyBirdObstacle());
-    //    lastObstacleMillis = millis();
-    //}
-    
-    if (width - obstacles.get(obstacles.size() - 1).x >= obstacleGap) {
-        obstacles.add(new FlappyBirdObstacle());
-    }
-    
-    for (FlappyBirdObstacle obstacle : obstacles) {
-      obstacle.move(scrollSpeed);
-      obstacle.draw();
-      
-      if (obstacle.x + obstacle.w < player.x) {
-        removeObstacle = true;
-        score++;
-        println("obstacle passed");
-        println(score);
+      if (width - obstacles.get(obstacles.size() - 1).x >= obstacleGap) {
+          obstacles.add(new FlappyBirdObstacle());
+          obstacleGap = random(obstacleMinGap, obstacleMaxGap);
       }
       
-      else if (obstacle.hasHitPlayer(player)) {
-        //console.log(
+      for (FlappyBirdObstacle obstacle : obstacles) {
+        obstacle.move(scrollSpeed);
+        obstacle.draw();
+        
+        if (obstacle.x + obstacle.w < player.x - player.w / 2 && !obstacle.passed) {
+          obstacle.passed = true;
+          score++;
+          if (score % 5 == 0) scrollSpeed++;
+        }
+        
+        else if (obstacle.hasHitPlayer(player)) {
+          gameOver = true;
+          updateHighScore();
+        }
+        
+        if (obstacle.passed && obstacle.x + obstacle.w < 0) {
+          removeObstacle = true; // used a variable so as not to interrupt the iteration of obstacles
+        }
+      }
+      
+      if (removeObstacle) {
+        obstacles.remove(0);
+        removeObstacle = false;
+      }
+      
+      // things to draw last - on top of everything else
+      stroke(0);
+      line(width / 2, 0, width / 2, height);
+      player.draw();
+      
+      if (faces.length == 0) {
+        textSize(24); fill(255); rectMode(CENTER); textAlign(CENTER, CENTER);
+        text("Please move your face into the frame", width / 2, height / 2);
+        // could eventually implement a lil (no face detected for 3 seconds :. pause)
       }
     }
+  }
+  
+  void mousePressed() {
+    if (gameOver) {
+      if (playAgain.mouseOver()) reset();
+      else if (home.mouseOver()) currentPage = homePage;
+    }
+  }
+  
+  void reset() {
+    score = 0;
+    scrollSpeed = 7;
+    removeObstacle = false;
+    gameOver = false;
+    newHighScore = false;
+    highScore = data.getJSONObject("flappy-bird").getInt("high-score");
     
-    player.draw();
-    
-    if (removeObstacle) {
-      obstacles.remove(0);
-      removeObstacle = false;
+    obstacles.clear();
+    obstacles.add(new FlappyBirdObstacle());
+    obstacles.get(0).setXPos(obstacles.get(0).x - obstacles.get(0).w);  
+  }
+  
+  void updateHighScore() {
+    int current = data.getJSONObject("flappy-bird").getInt("high-score");
+
+    if (score > current) {
+      highScore = score;
+      newHighScore = true;
+      data.getJSONObject("flappy-bird").setInt("high-score", highScore);
     }
     
+    saveJSONObject(data, dataPath);    
   }
 }
 
@@ -141,12 +192,13 @@ class FlappyBirdObstacle {
   float w = 150;
   float gapUpper;
   float gapLower;
-  //float gapHeight;
+  boolean passed = false;
   
   FlappyBirdObstacle() {
-    gapUpper = random(height * .15, height * .6);
-    //gapHeight = random(fbPlayerHeight * 1.5, fbPlayerHeight * 4);
-    gapLower = gapUpper + random(fbPlayerHeight * 1.5, fbPlayerHeight * 4);
+    // these values *should* ensure that the gap is at least [minGapMultiplier] times the player height, 
+    // but doesn't start or end too close to the edges of the screen
+    gapUpper = random(minGapStartY, height - minGapStartY - fbPlayerHeight * minGapMultiplier);
+    gapLower = random(gapUpper + fbPlayerHeight * minGapMultiplier, height - minGapStartY);
   }
   
   void setXPos(float x) {
@@ -160,13 +212,14 @@ class FlappyBirdObstacle {
   // if centreX ~= width / 2 and player.y < gapUpper or player.y > gapLower then fail
   
   void draw() {
-    //rectMode(CENTER)
+    fill(0, 255, 0); noStroke(); rectMode(CORNER);
     rect(x, 0, w, gapUpper);
     rect(x, gapLower, w, height);
   }
   
   boolean hasHitPlayer(FlappyBirdPlayer player) {
-    if (x >= player.minX && x <= player.maxX) {
+    if (x <= player.minX && x + w >= player.maxX) {
+    //if (x >= player.x - player.w / 2 && x + w <= player.maxX) {
       println("player in obstacle");
       if (player.y - player.h / 2 <= gapUpper || player.y + player.h / 2 >= gapLower) {
         println("hit");

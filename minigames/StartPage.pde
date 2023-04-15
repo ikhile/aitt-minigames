@@ -20,6 +20,6 @@ class StartPage extends Page {
   }
   
   void start() {
-    currentPage = home;
+    currentPage = homePage;
   }
 }

@@ -22,4 +22,8 @@ Instructions
 To choose a game, move left and right through the game menu by pressing the arrow buttons, the arrow keys on your keyboard.
 You can also move left and right by moving your head or body left or right within view of the camera! This can be a bit fiddly to get right, so feel free to use the traditional controls
 Motion controls can be turned off in settings if they're getting in your way.
+
+
+With a leaderboard - can I actually maintain scores between sessions? I guess if I write them to a file...
+Also maybe no leaderboard, maybe just track high scores
 */

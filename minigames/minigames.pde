@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 // Pages
 Page currentPage;
 StartPage startPage;
-HomePage home;
+HomePage homePage;
 FlappyBirdIntro fbi;
 FlappyBird fb;
 
@@ -15,6 +15,9 @@ Capture cam;
 
 int numGames = 5;
 
+JSONObject data;
+String dataPath = "data/data.json";
+
 // settings
 
 void setup() {
@@ -23,9 +26,7 @@ void setup() {
   
   // Pages
   startPage = new StartPage();
-  home = new HomePage();
-  
-  
+  homePage = new HomePage();
   
   // games
   fbi = new FlappyBirdIntro();
@@ -36,6 +37,8 @@ void setup() {
   initCamera(width, height);
   opencv = new OpenCV(this, cam.width, cam.height);
   surface.setResizable(true);
+  
+  data = loadJSONObject(dataPath);
 }
 
 void draw() {
@@ -51,3 +54,8 @@ void mousePressed() {
 void keyPressed() {
   currentPage.keyPressed();
 }
+
+// this can def be done i just cba right now
+//void dottedLine(int x1, int y1, int x2, int y2, int length, int gap) {
+  
+//}
