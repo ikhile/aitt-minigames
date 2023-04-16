@@ -8,6 +8,7 @@ StartPage startPage;
 HomePage homePage;
 FlappyBirdIntro fbi;
 FlappyBird fb;
+DrawPage drawPage;
 
 // OpenCV
 OpenCV opencv;
@@ -22,25 +23,20 @@ String dataPath = "data/data.json";
 
 void setup() {
   //fullScreen();
-  size (960, 540);
+  size (1536, 864);
   
   data = loadJSONObject(dataPath);
-
-  
-  // Pages
   startPage = new StartPage();
   homePage = new HomePage();
-  
-  // games
   fbi = new FlappyBirdIntro();
   fb = new FlappyBird();
-  currentPage = fb;
+  drawPage = new DrawPage();
+  setPage(drawPage);
   
   // OpenCV and Camera
   initCamera(width, height);
   opencv = new OpenCV(this, cam.width, cam.height);
-  surface.setResizable(true);
-  
+  surface.setResizable(true); // needed?
 }
 
 void draw() {
@@ -55,6 +51,11 @@ void mousePressed() {
 
 void keyPressed() {
   currentPage.keyPressed();
+}
+
+void setPage(Page page) {
+  currentPage = page;
+  currentPage.launch();
 }
 
 // this can def be done i just cba right now

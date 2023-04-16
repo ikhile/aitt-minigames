@@ -1,6 +1,7 @@
 int fbPlayerHeight = 50;
 int minGapStartY = 100;
 float minGapMultiplier = 2.0f;
+float maxGapMultiplier = 5.0f;
 
 class FlappyBird extends Page {
   Rectangle face;
@@ -18,14 +19,14 @@ class FlappyBird extends Page {
   float obstacleMaxGap = 400;
   boolean removeObstacle = false;
   
-  RectTextButton playAgain = new RectTextButton("Play Again", width / 2 + 60, height / 2 + 70, 100, 50);;
-  RectTextButton home= new RectTextButton("Home", width / 2 - 60, height / 2 + 70, 100, 50);
-  RectTextButton pause = new RectTextButton("Pause", width - 120, 35, 100, 50);
+  RectTextBtn playAgain = new RectTextBtn("Play Again", width / 2 + 60, height / 2 + 70, 100, 50);;
+  RectTextBtn home= new RectTextBtn("Home", width / 2 - 60, height / 2 + 70, 100, 50);
+  RectTextBtn pause = new RectTextBtn("Pause", width - 120, 35, 100, 50);
 
   FlappyBirdPlayer player = new FlappyBirdPlayer();
   ArrayList<FlappyBirdObstacle> obstacles = new ArrayList<FlappyBirdObstacle>();
   
-  FlappyBird() {
+  void launch() {
     reset();
   }
   
@@ -223,7 +224,10 @@ class FlappyBirdObstacle {
     // these values *should* ensure that the gap is at least [minGapMultiplier] times the player height, 
     // but doesn't start or end too close to the edges of the screen
     gapUpper = random(minGapStartY, height - minGapStartY - fbPlayerHeight * minGapMultiplier);
-    gapLower = random(gapUpper + fbPlayerHeight * minGapMultiplier, height - minGapStartY);
+    //gapLower = random(gapUpper + fbPlayerHeight * minGapMultiplier, height - minGapStartY);
+    
+    // but now the gap can be massive - need to constrain somehow
+    gapLower = random(gapUpper + fbPlayerHeight * minGapMultiplier, gapUpper + fbPlayerHeight * maxGapMultiplier);
   }
   
   void setXPos(float x) {
@@ -258,7 +262,7 @@ class FlappyBirdObstacle {
 
 
 class FlappyBirdIntro extends Page {
-  RectTextButton startBtn = new RectTextButton("Start", width / 2, height - 70, 150, 50);
+  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - 70, 150, 50);
   
   void draw() {
     background(200);
@@ -268,7 +272,7 @@ class FlappyBirdIntro extends Page {
   
   void mousePressed() {
     if (startBtn.mouseOver()) {
-      currentPage = fb;
+      setPage(fb);
     }
   }
 }

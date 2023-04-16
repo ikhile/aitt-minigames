@@ -1,9 +1,9 @@
 class StartPage extends Page {
   StartPage() {
-      usesFlow = false;
+      usesFlow = true;
   }
   
-  RectTextButton startBtn = new RectTextButton("START", width / 2, height / 2, 200, 200, 25);
+  RectTextBtn startBtn = new RectTextBtn("START", width / 2, height / 2, 200, 200, 25);
   void draw() {
     background(100);
     startBtn.draw();
@@ -20,6 +20,6 @@ class StartPage extends Page {
   }
   
   void start() {
-    currentPage = homePage;
+    setPage(homePage);
   }
 }

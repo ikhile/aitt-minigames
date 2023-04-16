@@ -1,12 +1,12 @@
 class HomePage extends Page {
   // buttons
-  RectTextButton startBtn = new RectTextButton("Start", width / 2, height - 70, 150, 50);
-  RectTextButton helpBtn = new RectTextButton("?", width - 35, 35, 50, 50, 15);
-  RectTextButton settingsBtn = new RectTextButton("Settings", width - 120, 35, 100, 50);
-  RectTextButton leaderboardBtn = new RectTextButton("Leaderboard", width - 230, 35, 100, 50);
+  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - 70, 150, 50);
+  RectTextBtn helpBtn = new RectTextBtn("?", width - 35, 35, 50, 50, 15);
+  RectTextBtn settingsBtn = new RectTextBtn("Settings", width - 120, 35, 100, 50);
+  RectTextBtn leaderboardBtn = new RectTextBtn("Leaderboard", width - 230, 35, 100, 50);
   
-  CircleTextButton leftBtn = new CircleTextButton("<", width * .2, height / 2, 50);
-  CircleTextButton rightBtn = new CircleTextButton(">", width * .8, height / 2, 50);
+  CircleTextBtn leftBtn = new CircleTextBtn("<", width * .2, height / 2, 50);
+  CircleTextBtn rightBtn = new CircleTextBtn(">", width * .8, height / 2, 50);
     
   // game menu item might be a class with an image button to start the game, a title and description text
   // or simply three arrays and an index

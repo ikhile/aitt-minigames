@@ -31,10 +31,10 @@ class Button {
   }
 }
 
-class RectTextButton extends Button {
+class RectTextBtn extends Button {
   String text;
  
-  RectTextButton(String text, float x, float y, float w, float h, float r) {
+  RectTextBtn(String text, float x, float y, float w, float h, float r) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -43,7 +43,7 @@ class RectTextButton extends Button {
     this.text = text;
   }
   
-  RectTextButton(String text, float x, float y, float w, float h) {
+  RectTextBtn(String text, float x, float y, float w, float h) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -66,11 +66,11 @@ class RectTextButton extends Button {
   }
 }
 
-class CircleTextButton extends Button {
+class CircleTextBtn extends Button {
   float d;
   String text;
  
-  CircleTextButton(String text, float x, float y, float d) {
+  CircleTextBtn(String text, float x, float y, float d) {
     this.x = x;
     this.y = y;
     this.d = d;
