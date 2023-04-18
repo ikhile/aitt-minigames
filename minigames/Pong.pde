@@ -43,10 +43,17 @@ class Pong extends Page {
   void draw() { // pong has no end really but could do first to 10?
     background(0);
     
+    // OPEN CV
     cam.read();
     opencv.loadImage((PImage)cam); 
     faces = opencv.detect();
+    
+    // background: webcam image transparent black
     drawWebcamMirrored();
+    // black transparent "background" over webcam image
+    rectMode(CORNER); fill(0, 0, 0, 170); rect(0, 0, width, height);
+    
+    // get faces
     p1Face = null;
     p2Face = null;
     
@@ -58,16 +65,9 @@ class Pong extends Page {
       } else if (p2Face == null && faces[i].x + faces[i].width / 2 < width / 2) { // face on right - less than because mirrored
         p2Face = faces[i];
       }
-      
-      //if (p1Face != null) println(p1Face.x);
-      //if (p2Face != null) println("2 " + p2Face.x);
     }
     
-    // black transparent "background" over webcam image
-    rectMode(CORNER);
-    fill(0, 0, 0, 170);
-    rect(0, 0, width, height);
-    
+    // DRAW FACES
     pushMatrix();
     scale(-1, 1);
       noFill();
@@ -77,25 +77,24 @@ class Pong extends Page {
     popMatrix();
     
     
-    // draw pong court
+    // COURT
     rectMode(CORNER);
     stroke(255); strokeWeight(4); noFill();
     rect(courtX, courtY, courtWidth, courtHeight);
-    line(width / 2, courtY, width / 2, height - courtY);
+    line(width / 2, courtY, width / 2, height - courtY); // dot this one
     
-    // scores
-    textAlign(CENTER, CENTER);
+    // SHOW SCORES
+    fill(255); textAlign(CENTER, CENTER); textSize(50);
     text(p1Score, courtX + courtWidth / 4, courtY + 10);
     text(p2Score, courtX + courtWidth * .75, courtY + 10);
     
-    
-    if (p1Face != null) p1.setY(p1Face.y + p1Face.height / 2); //line(p1Face.x, p1Face.y, p1.x, p1Face.y);}
+    // PLAYER
+    if (p1Face != null) p1.setY(p1Face.y + p1Face.height / 2);
     if (p2Face != null) p2.setY(p2Face.y + p2Face.height / 2);
     p1.draw();
     p2.draw();
     
-    
-    //if (ball.xSpeed > 0) ball.xSpeed = -ball.xSpeed;
+    // BALL
     ball.move();
     ball.draw();
     
@@ -110,11 +109,15 @@ class Pong extends Page {
     if (ball.hitLWall()) {
       // p2 score
       println("p2 score");
+      p2Score++;
+      ball.reset();
     }
     
     if (ball.hitRWall()) {
       // p1 score
       println("p1 score");
+      p1Score++;
+      ball.reset();
     }
     
   }
@@ -140,22 +143,13 @@ class PongBall {
   
   void reset() {
     x = width / 2;
-    y = pong.courtY + d / 2;
+    y = random(2) < 1 ? pong.courtY + d / 2 : pong.courtY + pong.courtHeight - d / 2;
     
     xSpeed = int(random(minSpeed, maxSpeed));
-    if (random(2) < 1) xSpeed = -xSpeed; // randomly pos or neg
-    //while (xSpeed == 0) { // should stop it equalling zero
-    //  xSpeed = int(random(-maxSpeed, maxSpeed));
-    //}
+    if (random(2) < 1) xSpeed = -xSpeed;
     
     ySpeed = int(random(minSpeed, maxSpeed));
     if (random(2) < 1) ySpeed = -ySpeed;
-    
-    //ySpeed = int(random(-maxSpeed, maxSpeed));
-    //while (ySpeed == 0) { // should stop it equalling zero
-    //  ySpeed = int(random(-maxSpeed, maxSpeed));
-    //}
-    println(xSpeed);
   }
   
   boolean hitUDWall() {
@@ -167,35 +161,21 @@ class PongBall {
   }
   
   boolean hitPlayer() {
-    //println(1, y > pong.p1.y - pong.p1.h / 2);
-    //println(2, y < pong.p1.y + pong.p1.h / 2);
-    stroke(255);
-    //line(0, pong.p1.y - pong.p1.h / 2, width, pong.p1.y - pong.p1.h / 2);
-    //line(0, pong.p1.y + pong.p1.h / 2, width, pong.p1.y + pong.p1.h / 2);
-    //line(x - d / 2, 0, x - d / 2, height);
-    //line(pong.p1.x + pong.p1.w, 0, pong.p1.x + pong.p1.w, height); 
-    //println(x - d / 2, pong.p1.x);
-    //println(3, x - d / 2 < pong.p1.x + pong.p1.w);
-    //println(4, (y - d / 2 >= pong.p1.y - pong.p1.h / 2));
-    //println(5, (y + d / 2 <= pong.p1.y + pong.p1.h / 2));
-    //line(x + d / 2, 0, x + d / 2, height);
-    if (// hits P1 (LEFT)
+    if (
+    
+        // hits P1 (LEFT)
         (x - d / 2 <= pong.p1.x + pong.p1.w && 
          y - d / 2 >= pong.p1.y - pong.p1.h / 2 && 
          y + d / 2 <= pong.p1.y + pong.p1.h / 2)
+         
          ||
+         
         // hits P2 (RIGHT)
         (x + d / 2 >= pong.p2.x - pong.p2.w &&
          y - d / 2 >= pong.p2.y - pong.p2.h / 2 && 
-         y + d / 2 <= pong.p2.y + pong.p2.h / 2)) { 
-      return true;
-    } //else println("not hit p1");
-    //if ((x - d / 2 <= pong.p1.w && (y - d / 2 >= pong.p1.y - pong.p1.h / 2 || y + d / 2 <= pong.p1.y + pong.p1.h / 2))
-    // || (x + d / 2 >= pong.courtX + pong.courtWidth + pong.p2.w && (y - d / 2 >= pong.p2.y - pong.p2.h / 2 || y + d / 2 <= pong.p2.y + pong.p2.h / 2)) ){
-    //   println("hit player");
-    //   xSpeed = -xSpeed;
-    //   return true;
-    // }
+         y + d / 2 <= pong.p2.y + pong.p2.h / 2)
+         
+       ) {  return true; }
      
      return false;
      
@@ -217,10 +197,7 @@ class PongBall {
     }
     return false;
   }
-  
-  // if hits a player or top/bottom wall, change direction
-  // if leaves court via left/right wall (or could let roll off screen?) give a point to the other side's player
-    // and reset pos and speed
+
 }
 
 class PongPlayer {
