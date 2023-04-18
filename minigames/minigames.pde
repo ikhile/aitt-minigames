@@ -9,6 +9,7 @@ HomePage homePage;
 FlappyBirdIntro fbi;
 FlappyBird fb;
 DrawPage drawPage;
+Pong pong;
 
 // OpenCV
 OpenCV opencv;
@@ -25,18 +26,21 @@ void setup() {
   //fullScreen();
   size (1536, 864);
   
+  // OpenCV and Camera
+  initCamera(width, height);
+  opencv = new OpenCV(this, cam.width, cam.height);
+  surface.setResizable(true); // needed?
+  
   data = loadJSONObject(dataPath);
   startPage = new StartPage();
   homePage = new HomePage();
   fbi = new FlappyBirdIntro();
   fb = new FlappyBird();
   drawPage = new DrawPage();
-  setPage(drawPage);
+  pong = new Pong();
+  setPage(pong);
   
-  // OpenCV and Camera
-  initCamera(width, height);
-  opencv = new OpenCV(this, cam.width, cam.height);
-  surface.setResizable(true); // needed?
+  
 }
 
 void draw() {

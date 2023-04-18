@@ -1,8 +1,3 @@
-int fbPlayerHeight = 50;
-int minGapStartY = 100;
-float minGapMultiplier = 2.0f;
-float maxGapMultiplier = 5.0f;
-
 class FlappyBird extends Page {
   Rectangle face;
   Rectangle[] faces;
@@ -177,6 +172,8 @@ class FlappyBird extends Page {
   }
 }
 
+int fbPlayerHeight = 50;
+
 class FlappyBirdPlayer {
   int y = width / 2;
   int x = width / 2;
@@ -212,6 +209,10 @@ class FlappyBirdPlayer {
   
   
 }
+
+int minGapStartY = 100;
+float minGapMultiplier = 2.0f;
+float maxGapMultiplier = 5.0f;
 
 class FlappyBirdObstacle {
   int x = width;
