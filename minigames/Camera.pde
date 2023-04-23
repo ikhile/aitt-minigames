@@ -34,3 +34,10 @@ void drawWebcamMirrored(int x, int y, int w, int h) {
     image(opencv.getInput(), -w - x, y, w, h);
   popMatrix();
 }
+
+void drawRectMirrored(Rectangle rect) {
+  pushMatrix();
+  scale(-1, 1);
+    rectMode(CORNER); rect(rect.x - width, rect.y, rect.width, rect.height);
+  popMatrix();
+}

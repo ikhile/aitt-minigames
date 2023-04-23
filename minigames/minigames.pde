@@ -1,6 +1,7 @@
 import processing.video.*;
 import gab.opencv.*;
 import java.awt.Rectangle;
+import java.util.*;
 
 // Pages
 Page currentPage;
@@ -10,6 +11,7 @@ FlappyBirdIntro fbi;
 FlappyBird fb;
 DrawPage drawPage;
 Pong pong;
+Quiz4 quiz4;
 
 // OpenCV
 OpenCV opencv;
@@ -38,9 +40,8 @@ void setup() {
   fb = new FlappyBird();
   drawPage = new DrawPage();
   pong = new Pong();
+  quiz4 = new Quiz4();
   setPage(pong);
-  
-  
 }
 
 void draw() {
@@ -62,7 +63,22 @@ void setPage(Page page) {
   currentPage.launch();
 }
 
-// this can def be done i just cba right now
-//void dottedLine(int x1, int y1, int x2, int y2, int length, int gap) {
+void dottedLine(float x1, float y1, float x2, float y2, int dotSize, float num) {
   
-//}
+  // after trying my own method (below) this was adapted from the Processing reference https://processing.org/reference/lerp_.html
+  for (int i = 0; i <= num; i++) {
+    float x = lerp(x1, x2, i / num);
+    float y = lerp(y1, y2, i / num);
+    circle(x, y, dotSize);
+  }
+    
+  //float currentX = x1;
+  //float currentY = y1;
+  
+  //while (currentX <= x1 && currentY <= y1) {
+  //  println(currentX);
+  //  circle(currentX, currentY, dotSize);
+  //  currentX = lerp(x1, x2, 0.05);
+  //  currentY = lerp(y1, y2, 0.05);
+  //}
+}

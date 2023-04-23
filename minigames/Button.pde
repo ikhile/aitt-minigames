@@ -7,6 +7,8 @@ class Button {
   color fillColour = color(255);
   color strokeColour = color(0);
   color textColour = color(0);
+  boolean noStroke = false;
+  boolean noFill = true;
   int strokeWeight = 1;
   float fontSize = g.textSize; // https://forum.processing.org/two/discussion/12660/is-there-a-way-to-access-the-default-textsize.html
   
@@ -19,6 +21,8 @@ class Button {
   void setStrokeWeight(int weight) { strokeWeight = weight; }
   void setTextColour(color colour) { textColour = colour; }
   void setFontSize(float size) { fontSize = size; }
+  void setNoStroke() { noStroke = true; }
+  void setNoFill() { noFill = true; }
   
   void setColours(color fill, color stroke) {
     fillColour = fill;
@@ -54,9 +58,12 @@ class RectTextBtn extends Button {
   
   void draw() {
     rectMode(CENTER);
-    strokeWeight(strokeWeight);
-    stroke(strokeColour);
-    fill(fillColour);
+    if (noStroke) { noStroke(); }
+    else { stroke(strokeColour); strokeWeight(strokeWeight); }
+    
+    if (noFill) { noFill(); }
+    else { fill(fillColour); }
+    
     rect(x, y, w, h, r);
     
     textAlign(CENTER, CENTER);
@@ -80,9 +87,12 @@ class CircleTextBtn extends Button {
   }
   
   void draw() {
-    stroke(strokeColour);
-    strokeWeight(strokeWeight);
-    fill(fillColour);    
+    if (noStroke) { noStroke(); }
+    else { stroke(strokeColour); strokeWeight(strokeWeight); }
+    
+    if (noFill) { noFill(); }
+    else { fill(fillColour); }
+    
     circle(x, y, d);
     
     fill(textColour);

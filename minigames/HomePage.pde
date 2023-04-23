@@ -11,9 +11,9 @@ class HomePage extends Page {
   // game menu item might be a class with an image button to start the game, a title and description text
   // or simply three arrays and an index
   int gameIndex = 0;
-  String[] gameTitles = {"1", "2", "3"};
-  String[] gameImagePaths = {"placeholder.png", "placeholder.png", "placeholder.png"};
-  String[] gameDescriptions = {"1", "2", "3"};
+  String[] gameTitles = {"Pong", "Flappy Bird", "Quiz", "Dodge"};
+  String[] gameImagePaths = {"placeholder.png", "placeholder.png", "placeholder.png", "placeholder.png"};
+  //String[] gameDescriptions = {"1", "2", "3"};
   PImage[] gameImages;
   
   boolean showOverlay = false;
@@ -41,7 +41,7 @@ class HomePage extends Page {
     pushMatrix();
     translate(0, -30); // shifted up a bit for start button
       text(gameTitles[gameIndex], width / 2, 100);
-      text(gameDescriptions[gameIndex], width / 2, height - 100, width, height / 5);
+      //text(gameDescriptions[gameIndex], width / 2, height - 100, width, height / 5);
       imageMode(CENTER);
       image(gameImages[gameIndex], width / 2, height / 2, width / 2, height / 2);
     popMatrix();
@@ -107,6 +107,25 @@ class HomePage extends Page {
     else if (settingsBtn.mouseOver()) {
       showOverlay = true;
       showSettingsOverlay = true;
+      
+    } else if (startBtn.mouseOver()) {
+      //String[] gameTitles = {"Pong", "Flappy Bird", "Quiz", "Dodge"};
+      
+      switch(gameIndex) {
+        case 0:
+          setPage(pong);
+          break;
+        case 1:
+          setPage(fbi);
+          break;
+        case 2:
+          setPage(quiz4);
+          break;
+        //case 3:
+        //  setPage(dodge);
+        //  break;
+      }
+      //println(gameTitles[gameIndex]);
     }
   }
   
