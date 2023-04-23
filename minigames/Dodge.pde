@@ -3,7 +3,7 @@ class Dodge extends Page {
   float[] zoneCentres = new float[zones];
   DodgePlayer player;
   int endZoneH = 150;
-  float flowSensitivity = 0.2f;
+  float flowSensitivity = 0.25f;
   boolean flowPause = false;
   int flowPauseMillis = 500;
   int millisAtPause;
@@ -12,7 +12,7 @@ class Dodge extends Page {
   int obsGap;
   int fallSpeed = 25;
   int score;
-  int numHit, maxHits = 3;
+  int numHit, maxHits = 1;
   ArrayList<DodgeObstacle> obstacles = new ArrayList<DodgeObstacle>();
   boolean removeObstacle;
   boolean gameOver;
@@ -21,6 +21,10 @@ class Dodge extends Page {
   RectTextBtn homeBtn;
   RectTextBtn startBtn;
   RectTextBtn quitBtn;
+  
+  
+  int highScore;
+  boolean newHighScore = false;
 
   Dodge() {
     for (int i = 0; i < zones; i++) {
@@ -48,6 +52,7 @@ class Dodge extends Page {
 
   void launch() {
     player = new DodgePlayer();
+    obstacles.clear();
     obstacles.add(new DodgeObstacle());
     millisNew = 3000;
     millisLastNew = millis();
@@ -57,6 +62,8 @@ class Dodge extends Page {
     removeObstacle = false;
     gameOver = false;
     started = false;
+    highScore = data.getJSONObject("dodge").getInt("high-score");
+    newHighScore = false;
   }
 
   void draw() {
@@ -72,8 +79,12 @@ class Dodge extends Page {
         dottedLine(zoneCentres[i], 0, zoneCentres[i], height, 3, 40);
       }
       
-      fill(255); rectMode(CENTER);
-      text("Game over\nYou scored " + score, width / 2, height / 2);
+      fill(255); rectMode(CENTER); textSize(36);
+      text(
+        "GAME OVER\nYou scored " + score + "\n" +
+        (newHighScore ? "NEW h" : "H") +
+        "igh score: " + highScore
+      , width / 2, height / 2);
       homeBtn.draw();
       startBtn.draw();
       
@@ -121,7 +132,7 @@ class Dodge extends Page {
       }
       
       if (removeObstacle) obstacles.remove(0); removeObstacle = false;
-      if (numHit > maxHits) gameOver = true;
+      if (numHit >= maxHits) gameOver = true; updateHighScore();
       
       // changed below to more of a "gap between" type deal
       //if (millis() - millisLastNew >= millisNew) {
@@ -143,9 +154,12 @@ class Dodge extends Page {
       if (flowPause && millis() - millisAtPause >= flowPauseMillis) {
         flowPause = false;
       }
+      
+      opencv.calculateOpticalFlow();
+      println(opencv.getAverageFlow().x);
   
       if (!flowPause) {
-        opencv.calculateOpticalFlow();
+        //opencv.calculateOpticalFlow();
         
         if (opencv.getAverageFlow().x > flowSensitivity) {
           player.move('L');
@@ -177,7 +191,18 @@ class Dodge extends Page {
       setPage(home);
     }
   }
-              
+  
+  void updateHighScore() {
+    int current = data.getJSONObject("dodge").getInt("high-score");
+
+    if (score > current) {
+      highScore = score;
+      newHighScore = true;
+      data.getJSONObject("dodge").setInt("high-score", highScore);
+    }
+    
+    saveJSONObject(data, dataPath);    
+  }              
 
 }
 

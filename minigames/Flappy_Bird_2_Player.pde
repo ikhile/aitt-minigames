@@ -3,7 +3,7 @@ class FlappyBird2Player extends Page {
   Rectangle p2Face;
   Rectangle[] faces;
   
-  int score = 0, p1Score = 0, p2Score = 0;
+  int p1Score = 0, p2Score = 0;
   int highScore;
   boolean p1Hit = false;
   boolean p2Hit = false;
@@ -186,7 +186,8 @@ class FlappyBird2Player extends Page {
   }
   
   void reset() {
-    score = 0;
+    p1Score = 0;
+    p2Score = 0;
     scrollSpeed = 7;
     removeObstacle = false;
     gameOver = false;
@@ -217,13 +218,14 @@ class FlappyBird2Player extends Page {
   
   void updateHighScore() {
     int current = data.getJSONObject("flappy-bird").getInt("high-score");
+    int highest = max(p1Score, p2Score);
 
-    if (score > current) {
-      highScore = score;
+    if (highest > current) {
+      highScore = highest;
       newHighScore = true;
       data.getJSONObject("flappy-bird").setInt("high-score", highScore);
     }
-    
+        
     saveJSONObject(data, dataPath);    
   }
  
@@ -233,7 +235,11 @@ class FlappyBird2Player extends Page {
     JSONObject newEntry = new JSONObject();
     String date = year() + "-" + month() + "-" + day();
     newEntry.setString("date", date);
-    newEntry.setInt("score", score);
+    newEntry.setInt("score", p1Score);
+    
+    JSONObject newEntry2 = new JSONObject();
+    newEntry2.setString("date", date);
+    newEntry2.setInt("score", p2Score);
     
     leaderboard.append(newEntry);
     
