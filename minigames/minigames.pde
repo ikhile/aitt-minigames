@@ -6,7 +6,7 @@ import java.util.*;
 // Pages
 Page currentPage;
 StartPage startPage;
-HomePage homePage;
+HomePage home;
 FlappyBirdIntro fbi;
 FlappyBird fb;
 DrawPage drawPage;
@@ -35,13 +35,13 @@ void setup() {
   
   data = loadJSONObject(dataPath);
   startPage = new StartPage();
-  homePage = new HomePage();
+  home = new HomePage();
   fbi = new FlappyBirdIntro();
   fb = new FlappyBird();
   drawPage = new DrawPage();
   pong = new Pong();
   quiz4 = new Quiz4();
-  setPage(pong);
+  setPage(fbi);
 }
 
 void draw() {

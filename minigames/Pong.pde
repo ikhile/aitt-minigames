@@ -1,7 +1,7 @@
 class Pong extends Page {
   int p1Score;
   int p2Score;
-  int winScore = 1;
+  int winScore = 1; // testing purposes - set to 10
   boolean started, paused, gameOver;
   
   PongPlayer p1, p2;
@@ -19,9 +19,11 @@ class Pong extends Page {
   int courtX = 200;
   int courtY = 120;
   int courtWidth, courtHeight;
+  int bgAlpha = 170;
   
-  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - courtY / 2, 150, 50);
-  RectTextBtn pauseBtn = new RectTextBtn("Pause", width / 2, height - courtY / 2, 150, 50);
+  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - courtY / 2, 130, 50, 10);
+  RectTextBtn pauseBtn = new RectTextBtn("Pause", width / 2, height - courtY / 2, 130, 50, 10);
+  RectTextBtn homeBtn = new RectTextBtn("Home", 55, 40, 80, 50, 5);
   
   Pong() {
     courtWidth = width - courtX * 2;
@@ -33,13 +35,18 @@ class Pong extends Page {
     startBtn.setStroke(color(255));
     startBtn.setTextColour(color(255));
     startBtn.setNoFill();
-    startBtn.setStrokeWeight(4);
+    startBtn.setStrokeWeight(2);
     
     //pauseBtn.setColours(color(0), color(255), color(255));
     pauseBtn.setStroke(color(255));
     pauseBtn.setTextColour(color(255));
     pauseBtn.setNoFill();
-    pauseBtn.setStrokeWeight(4);
+    pauseBtn.setStrokeWeight(2);
+    
+    homeBtn.setStroke(color(255));
+    homeBtn.setTextColour(color(255));
+    homeBtn.setNoFill();
+    homeBtn.setStrokeWeight(2);
   }
   
   void launch() {
@@ -57,26 +64,55 @@ class Pong extends Page {
     opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);
   }
 
-  void draw() { // pong has no end really but could do first to 10?
-    background(0);
+  void draw() {
     
     if (!started) {
       background(0);
+      
+      drawCourt(false);
+      dottedLine(width / 2, courtY + 10, width / 2, courtY + 60, 5, 5);
+      dottedLine(width / 2, courtY + courtHeight - 60, width / 2, courtY + courtHeight - 10, 5, 5);
+      p1.draw();
+      p2.draw();
+      
       fill(255);
       rectMode(CENTER);
       textAlign(CENTER, BASELINE);
-      text("instructions", width / 2, height / 2);
+      textSize(36); text("Pong", width / 2, courtY + courtHeight / 5);
+      textSize(24); text("instructions", width / 2, height / 2);
       
-      noFill(); stroke(255); strokeWeight(4);
-      rect(width / 2, height / 2, courtWidth, courtHeight);
-      p1.draw();
-      p2.draw();
-      stroke(255, 255, 255, 100); fill(255); noStroke();
-      dottedLine(width / 2, courtY + 10, width / 2, height - courtY - 10, 5, 50);
       startBtn.draw();
     }
     
-    if (started) {
+    else if (gameOver) {
+      drawWebcamMirrored();
+      rectMode(CORNER); fill(0, 0, 0, bgAlpha); rect(0, 0, width, height);
+      drawCourt();
+      drawFaces();
+      drawScores();
+      p1.draw();
+      p2.draw();
+      ball.draw();
+      startBtn.draw();
+      
+      textSize(36); text((p1Score == winScore ? "Player 1 wins!" : "Player 2 wins!"), width / 2, courtY / 2);
+    }
+    
+    else if (paused) {
+      drawWebcamMirrored();
+      drawCourt();
+      drawFaces();
+      drawScores();
+      p1.draw();
+      p2.draw();
+      ball.draw();
+      fill(0, 0, 0, 215); rect(width / 2, height / 2, width, height);
+
+      textSize(100); fill(255); text("PAUSED", width / 2, height / 2);
+      startBtn.draw();
+    }
+    
+    else if (started) {
           // OPEN CV
         cam.read();
         opencv.loadImage((PImage)cam); 
@@ -85,11 +121,16 @@ class Pong extends Page {
         // background: webcam image transparent black
         drawWebcamMirrored();
         // black transparent "background" over webcam image
-        rectMode(CORNER); fill(0, 0, 0, 170); rect(0, 0, width, height);
+        rectMode(CORNER); fill(0, 0, 0, bgAlpha); rect(0, 0, width, height);
         
         // get faces
         p1Face = null;
         p2Face = null;
+        
+        if (faces.length == 0) {
+          textSize(24); fill(255);
+          text("No faces detected. Please move into frame or check your lighting.", width / 2, courtY / 2);
+        }
         
         // check which side of the screen each face is on and store as relevant player
         for (int i = 0; i < faces.length && p1Face == null && p2Face == null; i++) { // end loop once both player faces set
@@ -101,33 +142,9 @@ class Pong extends Page {
           }
         }
         
-        if (faces.length == 0) {
-          textSize(24); fill(255);
-          text("No faces detected. Please move into frame or check your lighting.", width / 2, courtY / 2);
-        }
-        
-        // DRAW FACES
-        // replace with drawRectMirrored()
-        pushMatrix();
-        scale(-1, 1);
-          noFill();
-          // draw player 1 red, player 2 blue
-          if (p1Face != null) {stroke(255, 0, 0); rect(p1Face.x - width, p1Face.y, p1Face.width, p1Face.height);}
-          if (p2Face != null) {stroke(0, 0, 255); rect(p2Face.x - width, p2Face.y, p2Face.width, p2Face.height);}
-        popMatrix();
-        
-        
-        // COURT
-        rectMode(CORNER);
-        stroke(255); strokeWeight(4); noFill();
-        rect(courtX, courtY, courtWidth, courtHeight);
-        fill(255); noStroke();
-        dottedLine(width / 2, courtY + 10, width / 2, height - courtY - 10, 5, 50);
-        
-        // SHOW SCORES
-        fill(255); textAlign(CENTER, CENTER); textSize(50);
-        text(p1Score, courtX + courtWidth / 4, courtY + 30);
-        text(p2Score, courtX + courtWidth * .75, courtY + 30);
+        drawFaces();
+        drawCourt();
+        drawScores();
         
         // PLAYER
         if (p1Face != null) p1.setY(p1Face.y + p1Face.height / 2);
@@ -148,42 +165,75 @@ class Pong extends Page {
         }
         
         if (ball.hitLWall()) {
-          // p2 score
-          println("p2 score");
-          p2Score++;
-          ball.reset();
-          
-          if (p2Score == winScore) {
-            println("p2 wins");
-          }
+          if (p2Score == winScore) gameOver();          
+          else ball.reset();
         }
         
         if (ball.hitRWall()) {
-          // p1 score
-          println("p1 score");
           p1Score++;
-          ball.reset();
           
-          if (p1Score == winScore) {
-            println("p1 wins");
-          }
+          if (p1Score == winScore) gameOver();          
+          else ball.reset();
         }
         
         pauseBtn.draw();
     }
     
-    
+    homeBtn.draw();
     
   }
   
   void mousePressed() {
-    if (!started && startBtn.mouseOver()) {
-      started = true;
+
+    if (startBtn.mouseOver() && !started) { started = true; }
+    
+    else if (startBtn.mouseOver() && gameOver) { launch(); started = true; }   
+    
+    else if (pauseBtn.mouseOver() && started && !gameOver && !paused) {
+      println("pause");
+      pause();
+    }
+    
+    else if (startBtn.mouseOver() && paused) {
+      paused = false;
+    }
+    
+    else if (homeBtn.mouseOver()) {
+      setPage(home);
     }
   }
   
+  void pause() {
+    paused = true;
+  }
+  
   void gameOver() {
-    
+    gameOver = true;
+  }
+  
+  void drawCourt() {
+    drawCourt(true);
+  }
+  
+  void drawCourt(boolean centreLine) {
+    rectMode(CORNER);
+    stroke(255); strokeWeight(4); noFill();
+    rect(courtX, courtY, courtWidth, courtHeight);
+    fill(255); noStroke();
+    if (centreLine) dottedLine(width / 2, courtY + 10, width / 2, height - courtY - 10, 5, 50);
+  }
+  
+  void drawScores() {
+    fill(255); textAlign(CENTER, CENTER); textSize(50);
+    text(p1Score, courtX + courtWidth / 4, courtY + 30);
+    text(p2Score, courtX + courtWidth * .75, courtY + 30);
+  }
+  
+  void drawFaces() {
+    // DRAW FACES - player 1 red, player 2 blue
+    noFill();
+    if (p1Face != null) {stroke(255, 0, 0); drawRectMirrored(p1Face); }
+    if (p2Face != null) {stroke(0, 0, 255); drawRectMirrored(p2Face); }
   }
 }
 
