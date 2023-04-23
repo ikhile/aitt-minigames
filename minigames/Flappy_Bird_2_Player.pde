@@ -10,6 +10,7 @@ class FlappyBird2Player extends Page {
   boolean gameOver = false;
   boolean paused = false;
   boolean newHighScore = false;
+  int winner;
   
   float scrollSpeed;
   float obstacleGap;  
@@ -17,15 +18,14 @@ class FlappyBird2Player extends Page {
   float obstacleMaxGap = 300;
   boolean removeObstacle = false;
   
-  RectTextBtn playAgain = new RectTextBtn("Play Again", width / 2 + 60, height / 2 + 70, 100, 50);;
-  RectTextBtn homeBtn = new RectTextBtn("Home", width / 2 - 60, height / 2 + 70, 100, 50);
+  RectTextBtn playAgain = new RectTextBtn("Play Again", width / 2 + 60, height / 2 + 200, 100, 50);;
+  RectTextBtn homeBtn = new RectTextBtn("Home", width / 2 - 60, height / 2 + 270, 100, 50);
   RectTextBtn pause = new RectTextBtn("Pause", width - 120, 35, 100, 50);
 
   FlappyBirdPlayer player1 = new FlappyBirdPlayer();
   FlappyBirdPlayer player2 = new FlappyBirdPlayer();
   ArrayList<FB2Obstacle> obstacles1 = new ArrayList<FB2Obstacle>();
   ArrayList<FB2Obstacle> obstacles2 = new ArrayList<FB2Obstacle>();
-  //ArrayList<FlappyBirdObstacle> obstacles2 = new ArrayList<FlappyBirdObstacle>();
   
   void launch() {
     reset();
@@ -41,8 +41,8 @@ class FlappyBird2Player extends Page {
     if (gameOver) {
       drawWebcamMirrored();
       
-      // draw the game just don't move it
-      for (FB2Obstacle obstacle : obstacles1) obstacle.draw();      
+      for (FB2Obstacle obstacle : obstacles1) obstacle.draw();  
+      for (FB2Obstacle obstacle : obstacles2) obstacle.draw();
       player1.draw();
       player2.draw();
       
@@ -52,18 +52,23 @@ class FlappyBird2Player extends Page {
       stroke(0); strokeWeight(3); fill(0, 0, 0, 50);
       rect(width / 2, height / 2, width - 150, height - 150);
       
-      fill(255);
+      fill(255); textSize(36);
       textAlign(CENTER, CENTER);
-      text("GAME OVER", width / 2, height / 2 - 50);
-      text("score: " + score, width / 2, height / 2);
-      text((newHighScore ? "NEW " : "") + "High score: " + highScore, width / 2, height / 2 + 15);
+      text(
+        "GAME OVER\nPlayer 1 scored: " + p1Score +
+        "\nPlayer 2 scored: " + p2Score + 
+        "\n" + 
+        (winner == -1 ? "Draw" : ("Player " + winner + "wins!")) + 
+        "\n" +
+        (newHighScore ? "NEW " : "") + 
+        "High score: " + highScore
+      , width / 2, height / 2);
       
+            
       playAgain.draw();
       homeBtn.draw();
-      
 
     } else {
-      println(obstacles1.size(), obstacles2.size());
       cam.read();
       opencv.loadImage((PImage)cam);  
       drawWebcamMirrored();
@@ -75,33 +80,30 @@ class FlappyBird2Player extends Page {
       
       p1Face = null;
       p2Face = null;
-      strokeWeight(1); noFill();
+      strokeWeight(3); noFill();
       
       for (int i = 0; i < faces.length; i++) {
           if (p1Face == null && faces[i].x + faces[i].width / 2 > width / 2) {
             p1Face = faces[i];
             stroke(255, 0, 0); drawRectMirrored(p1Face); 
-            player1.setYPos(p1Face.y + p1Face.height / 2);
+            if (!p1Hit) player1.setYPos(p1Face.y + p1Face.height / 2);
             
           } else if (p2Face == null && faces[i].x + faces[i].width / 2 < width / 2) {
             p2Face = faces[i];
             stroke(0, 0, 255); drawRectMirrored(p2Face); 
-            player2.setYPos(p2Face.y + p2Face.height / 2);
+            if (!p2Hit) player2.setYPos(p2Face.y + p2Face.height / 2);
           }
           
-          else {stroke(0); drawRectMirrored(faces[i]);}        
+          else { stroke(0); strokeWeight(1); drawRectMirrored(faces[i]); }        
       }
-      
-      line(obstacles1.get(obstacles1.size() - 1).x + obstacles1.get(obstacles1.size() - 1).w, 0, obstacles1.get(obstacles1.size() - 1).x + obstacles1.get(obstacles1.size() - 1).w, height);
-      
+            
       if (!p1Hit && width / 2 - (obstacles1.get(obstacles1.size() - 1).x + obstacles1.get(obstacles1.size() - 1).w) >= obstacleGap) {
         addObstacle();
+        
       } else if (!p2Hit && width - (obstacles2.get(obstacles2.size() - 1).x + obstacles2.get(obstacles2.size() - 1).w) >= obstacleGap) {
         addObstacle();
       }
-      
-      println(width - (obstacles2.get(obstacles2.size() - 1).x + obstacles2.get(obstacles2.size() - 1).w) >= obstacleGap);
-      
+            
       for (FB2Obstacle ob1 : obstacles1) {        
         
         if (!p1Hit) {
@@ -116,29 +118,15 @@ class FlappyBird2Player extends Page {
           
           else if (ob1.hasHitPlayer(player1)) {
             p1Hit = true;
-            println("P1 hit");
             updateHighScore(); // actually could leave - if the next player gets higher will auto update
             updateLeaderboard();
           }
         }
         
-        //if (ob1.passed && ob1.x + ob1.w < 0) {
-        //    removeObstacle = true;
-        //}
-        
         ob1.draw();
       }
       
-      //for (int i = 0; i < obstacles2.size(); i++) { 
       for (FB2Obstacle ob2 : obstacles2) {
-        //FB2Obstacle ob2 = obstacles2.get(i);
-        
-        //ob1.move(scrollSpeed);    ob2.move(scrollSpeed);
-        //ob1.draw();               ob2.draw();
-        
-        
-        
-        
         if (!p2Hit) {
           ob2.move(scrollSpeed);
           
@@ -150,65 +138,43 @@ class FlappyBird2Player extends Page {
           }
           
           else if (ob2.hasHitPlayer(player2)) {
-            //p2Hit = true;
-            println("P2 hit");
+            p2Hit = true;
             updateHighScore(); // actually could leave - if the next player gets higher will auto update
             updateLeaderboard();
           }
         }
         
         ob2.draw();
-        
-        //if (ob1.passed && ob1.x + ob1.w < 0) {
-        //    removeObstacle = true;
-        //}
       }
       
-      //for (FB2Obstacle obstacle : obstacles1) {
-      //  obstacle.move(scrollSpeed);
-      //  obstacle.draw();
-        
-      //  if (obstacle.x + obstacle.w < player1.x - player1.w / 2 && !obstacle.passed) {
-      //    obstacle.passed = true;
-      //    score++;
-      //    if (score % 5 == 0) scrollSpeed++;
-      //  }
-        
-      //  else if (obstacle.hasHitPlayer(player1)) {
-      //    gameOver = true;
-      //    updateHighScore();
-      //    updateLeaderboard();
-      //  }
-        
-      //  if (obstacle.passed && obstacle.x + obstacle.w < 0) {
-      //    removeObstacle = true; // used a variable so as not to interrupt the iteration of obstacles
-      //  }
-      //}
-      
-      //if (removeObstacle) {
-      //  obstacles1.remove(0);
-      //  removeObstacle = false;
-      //}
-      
-      //for (FB2Obstacle obstacle: obstacles2) {
-      //  obstacle.move(scrollSpeed);
-      //  obstacle.draw();
-      //}
-      
+      if (p1Hit && p2Hit) {
+        gameOver = true;
+        if (p1Score > p2Score) winner = 1;
+        else if (p2Score > p1Score) winner = 2;
+        else if (p1Score == p2Score) winner = -1;
+      }
+
       // things to draw last - on top of everything else
       stroke(255); strokeWeight(1);
-      dottedLine(width / 4, 10, width / 4, height - 10, 4, 30);
-      dottedLine(width * 3/4, 10, width * 3/4, height - 10, 4, 30);
+      fill(255, 0, 0); dottedLine(width / 4, 10, width / 4, height - 10, 4, 30);
+      fill(0, 0, 255); dottedLine(width * 3/4, 10, width * 3/4, height - 10, 4, 30);
       player1.draw();
       player2.draw();
       strokeWeight(5); stroke(255, 0, 0);
       line(width / 2, 0, width / 2, height);
+      fill(255); textSize(70);  textAlign(CENTER);
+      text(p1Score, width / 4, height * .1);
+      text(p2Score, width * .75, height * .1);
       
-      if (faces.length == 0) {
-        textSize(24); fill(255); rectMode(CENTER); textAlign(CENTER, CENTER);
-        text("Please move your face into the frame\n(or check your lighting)", width / 2, height / 2);
-        // could eventually implement a lil (no face detected for 3 seconds :. pause)
-      }
+      //if (faces.length <= 1) {
+      //  textSize(24); fill(255); rectMode(CENTER); textAlign(CENTER, CENTER);
+      //  text(faces.length + " face" + (faces.length == 1 ? "" : "s") + " detected\nPlease move your face into the frame\n(or check your lighting)", width / 2, height / 2);
+      //}
+      
+      textSize(24); fill(255); rectMode(CENTER); textAlign(CENTER, CENTER);
+      
+      if (p1Face == null) text("No face detected\nPlease move your face into the frame\n(or check your lighting)", width / 4, height / 2);
+      if (p2Face == null) text("No face detected\nPlease move your face into the frame\n(or check your lighting)", width * .75, height / 2);
     }
   }
   
@@ -229,8 +195,6 @@ class FlappyBird2Player extends Page {
     
     obstacles1.clear();
     addObstacle();
-    
-    //println(obstacles2);
   }
   
   void addObstacle() {
@@ -298,14 +262,16 @@ class FB2Obstacle extends FlappyBirdObstacle {
   }
   
   void draw() {
-    fill(0, 255, 0); noStroke(); rectMode(CORNERS);
+    noStroke(); rectMode(CORNERS);
     
     switch(playerSide) {
       case 1: 
+        fill(255, 0, 0);
         rect(x, 0, constrain(x + w, 0, width / 2), gapUpper);
         rect(x, gapLower, constrain(x + w, 0, width / 2), height);
         break;
       case 2:
+        fill(0, 0, 255);
         rect(constrain(x, width / 2, width), 0, constrain(x + w, width / 2, width), gapUpper);
         rect(constrain(x, width / 2, width), gapLower, constrain(x + w, width / 2, width), height);
         break;

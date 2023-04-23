@@ -1,7 +1,7 @@
 class Pong extends Page {
   int p1Score;
   int p2Score;
-  int winScore = 1; // testing purposes - set to 10
+  int winScore = 11; // testing purposes - set to 11
   boolean started, paused, gameOver;
   
   PongPlayer p1, p2;
@@ -77,16 +77,23 @@ class Pong extends Page {
       
       fill(255);
       rectMode(CENTER);
-      textAlign(CENTER, BASELINE);
-      textSize(36); text("Pong", width / 2, courtY + courtHeight / 5);
-      textSize(24); text("instructions", width / 2, height / 2);
+      textAlign(CENTER, CENTER);
+      textSize(36); text("Pong", width / 2, courtY + courtHeight / 5 + 10);
+      textSize(24);
+      text(
+        "In this classic computer game, move your head up and down to control your paddle and send the ball back to your opponent.\n\n" +
+        "Miss the ball and your opponent scores a point - first to " + winScore + " wins!\n\n" +
+        "Player on the left of the screen controls the left paddle, player on the right controls the right paddle - " +
+        "or play solo by moving from one side of the screen to the other!"
+      , width / 2, height / 2 + 30, width * .4, height);
       
       startBtn.draw();
     }
     
     else if (gameOver) {
       drawWebcamMirrored();
-      rectMode(CORNER); fill(0, 0, 0, bgAlpha); rect(0, 0, width, height);
+      rectMode(CORNER); fill(0, 0, 0, bgAlpha); noStroke(); 
+      rect(0, 0, width, height);
       drawCourt();
       drawFaces();
       drawScores();
@@ -113,15 +120,14 @@ class Pong extends Page {
     }
     
     else if (started) {
-          // OPEN CV
+        // OPEN CV
         cam.read();
         opencv.loadImage((PImage)cam); 
         faces = opencv.detect();
         
-        // background: webcam image transparent black
         drawWebcamMirrored();
-        // black transparent "background" over webcam image
-        rectMode(CORNER); fill(0, 0, 0, bgAlpha); rect(0, 0, width, height);
+        rectMode(CORNER); noStroke(); fill(0, 0, 0, bgAlpha);
+        rect(0, 0, width, height);
         
         // get faces
         p1Face = null;
@@ -156,6 +162,7 @@ class Pong extends Page {
         ball.move();
         ball.draw();
         
+        // COLLISIONS        
         if (ball.hitUDWall()) {
           ball.ySpeed = -ball.ySpeed;
         }
@@ -165,6 +172,8 @@ class Pong extends Page {
         }
         
         if (ball.hitLWall()) {
+          p2Score++;
+          
           if (p2Score == winScore) gameOver();          
           else ball.reset();
         }
@@ -190,8 +199,7 @@ class Pong extends Page {
     else if (startBtn.mouseOver() && gameOver) { launch(); started = true; }   
     
     else if (pauseBtn.mouseOver() && started && !gameOver && !paused) {
-      println("pause");
-      pause();
+      paused = true;
     }
     
     else if (startBtn.mouseOver() && paused) {
@@ -203,9 +211,6 @@ class Pong extends Page {
     }
   }
   
-  void pause() {
-    paused = true;
-  }
   
   void gameOver() {
     gameOver = true;
@@ -230,7 +235,7 @@ class Pong extends Page {
   }
   
   void drawFaces() {
-    // DRAW FACES - player 1 red, player 2 blue
+    // player 1 red, player 2 blue
     noFill();
     if (p1Face != null) {stroke(255, 0, 0); drawRectMirrored(p1Face); }
     if (p2Face != null) {stroke(0, 0, 255); drawRectMirrored(p2Face); }
@@ -239,7 +244,7 @@ class Pong extends Page {
 
 class PongBall {
   int x, y, d = 50, xSpeed, ySpeed;
-  int minSpeed = 5, maxSpeed = 15;
+  int minSpeed = 10, maxSpeed = 30;
   
   void draw() {
     fill(255); noStroke();
@@ -253,14 +258,15 @@ class PongBall {
   
   void reset() {
     x = width / 2;
-    //y = random(2) < 1 ? pong.courtY + d / 2 : pong.courtY + pong.courtHeight - d / 2;
-    y = height / 2; //int(random(pong.courtY, pong.courtY + pong.courtHeight));
+    y = height / 2;
     
     xSpeed = int(random(minSpeed, maxSpeed));
     if (random(2) < 1) xSpeed = -xSpeed;
     
     ySpeed = int(random(minSpeed, maxSpeed));
     if (random(2) < 1) ySpeed = -ySpeed;
+    
+    println(xSpeed, ySpeed);
   }
   
   boolean hitUDWall() {

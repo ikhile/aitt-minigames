@@ -8,7 +8,6 @@ class FlappyBird extends Page {
   boolean gameOver = false;
   boolean paused = false;
   boolean newHighScore = false;
-  boolean twoPlayer = false;
   
   float scrollSpeed;
   float obstacleGap;  
@@ -73,20 +72,6 @@ class FlappyBird extends Page {
         player.setYPos(face.y + face.height / 2); // centre Y of face
       }
       
-      //if (twoPlayer) {
-      //  strokeWeight(5);
-      //  line(width / 2, 0, width / 2, height);
-        
-      //  for (FlappyBirdObstacle obstacle: obstacles) {
-      //    obstacle.move(scrollSpeed);
-      //  }
-      //} else {
-      
-      //}
-      
-      //line(obstacles.get(obstacles.size() - 1).x + obstacles.get(obstacles.size() - 1).w, 0, obstacles.get(obstacles.size() - 1).x + obstacles.get(obstacles.size() - 1).w, height);
-      //line(obstacles.get(obstacles.size() - 1).x + obstacles.get(obstacles.size() - 1).w, 0, obstacles.get(obstacles.size() - 1).x + obstacles.get(obstacles.size() - 1).w, height);
-      
       if (width - (obstacles.get(obstacles.size() - 1).x + obstacles.get(obstacles.size() - 1).w) >= obstacleGap) {
           obstacles.add(new FlappyBirdObstacle());
           obstacleGap = random(obstacleMinGap, obstacleMaxGap);
@@ -121,11 +106,7 @@ class FlappyBird extends Page {
       // things to draw last - on top of everything else
       stroke(255); strokeWeight(1);
       dottedLine(width / 2, 10, width / 2, height - 10, 4, 30);
-      //pushMatrix();
-      //scale(-1, 1);
-      //  line(face.x, face.y + face.height / 2, face.x + face.width , face.y + face.height / 2);
-      //        dottedLine(face.x, face.y, player.x, face.y + face.height / 2, 5, 10);
-      //popMatrix();
+      textAlign(CENTER); fill(255); textSize(80); text(score, width / 2, height * .1);
       player.draw();
       
       if (faces.length == 0) {
@@ -239,7 +220,6 @@ class FlappyBirdObstacle {
   FlappyBirdObstacle() {
     w = random(minObsWidth, maxObsWidth);
     gapUpper = random(minGapStartY, height - minGapStartY - fbPlayerHeight * minGapMultiplier);    
-    //gapLower = random(gapUpper + fbPlayerHeight * minGapMultiplier, gapUpper + fbPlayerHeight * maxGapMultiplier);
     gapLower = random(gapUpper + fbPlayerHeight * minGapMultiplier, height - minGapStartY);
   }
   
@@ -253,17 +233,11 @@ class FlappyBirdObstacle {
     
   void draw() {
     fill(0, 255, 0); noStroke(); rectMode(CORNER);
-    println(x);
     rect(x, 0, w, gapUpper);
     rect(x, gapLower, w, height);
   }
   
   boolean hasHitPlayer(FlappyBirdPlayer player) {
-    //stroke(255, 0, 0); line(player.minX, 0, player.minX, height);
-    //stroke(0, 255, 0); line(player.maxX, 0, player.maxX, height);
-    //stroke(0, 0, 255); line(x + w, 0, x + w, height);
-    //stroke(255, 255, 0); line(x, 0, x, height);
-
     if (( player.minX <= x + w && player.maxX >= x ) && 
         ( player.y - player.h / 2 <= gapUpper || player.y + player.h / 2 >= gapLower )) {
       return true;
@@ -275,17 +249,32 @@ class FlappyBirdObstacle {
 
 
 class FlappyBirdIntro extends Page {
-  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - 70, 150, 50);
+  RectTextBtn start1Player = new RectTextBtn("1 Player", width / 2 - 80, height / 2 + 170, 150, 80, 10);
+  RectTextBtn start2Player = new RectTextBtn("2 Players", width / 2 + 80, height / 2 + 170, 150, 80, 10);
+  
+  FlappyBirdIntro() {
+    start1Player.setFill(color(255, 255, 255, 150));
+    start2Player.setFill(color(255, 255, 255, 150));
+  }
   
   void draw() {
-    background(200);
-    text("instructions", width / 2, height / 2);
-    startBtn.draw();
+    background(125, 212, 175);
+    fill(255); textSize(24);
+    text(
+        "Move your head up and down to move the bird and avoid the pipes!\n\n" +
+        "Two players: control the bird on your side of the screen, and try to beat your opponent!"
+    , width / 2, height / 2);
+    start1Player.draw();
+    start2Player.draw();
   }
   
   void mousePressed() {
-    if (startBtn.mouseOver()) {
+    if (start1Player.mouseOver()) {
       setPage(fb);
+    }
+    
+    else if (start2Player.mouseOver()) {
+      setPage(fb2);
     }
   }
 }

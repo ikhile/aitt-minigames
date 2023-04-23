@@ -1,18 +1,19 @@
 class HomePage extends Page {
   // buttons
-  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - 70, 150, 50);
+  RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height * 5 / 6, 150, 50);
   RectTextBtn helpBtn = new RectTextBtn("?", width - 35, 35, 50, 50, 15);
   RectTextBtn settingsBtn = new RectTextBtn("Settings", width - 120, 35, 100, 50);
   //RectTextBtn leaderboardBtn = new RectTextBtn("Leaderboard", width - 230, 35, 100, 50);
   
-  CircleTextBtn leftBtn = new CircleTextBtn("<", width * .2, height / 2, 50);
-  CircleTextBtn rightBtn = new CircleTextBtn(">", width * .8, height / 2, 50);
+  CircleTextBtn leftBtn = new CircleTextBtn(Character.toString(0x2190), width * .2, height / 2, 80);
+  CircleTextBtn rightBtn = new CircleTextBtn(Character.toString(0x2192), width * .8, height / 2, 80);
     
   // game menu item might be a class with an image button to start the game, a title and description text
   // or simply three arrays and an index
   int gameIndex = 0;
   String[] gameTitles = {"Pong", "Flappy Bird", "Quiz", "Dodge"};
   String[] gameImagePaths = {"placeholder.png", "placeholder.png", "placeholder.png", "placeholder.png"};
+  Page[] gamePages = {pong, fbi, quiz4, dodge};
   //String[] gameDescriptions = {"1", "2", "3"};
   PImage[] gameImages;
   
@@ -32,56 +33,60 @@ class HomePage extends Page {
       gameImages[i] = loadImage(gameImagePaths[i]);
     }
     
+    leftBtn.setStrokeWeight(3); leftBtn.setColours(color(255, 255, 255, 50), color(255), color(255)); leftBtn.setFontSize(48);
+    rightBtn.setStrokeWeight(3); rightBtn.setColours(color(255, 255, 255, 50), color(255), color(255)); rightBtn.setFontSize(48);
+    
   }
   
   void draw() {
-    background(155);
+    background(255);
+    
+    rectMode(CORNER); noStroke(); fill(0, 0, 255, 100); rect(0, 0, width, height);
     
     // game info
-    pushMatrix();
-    translate(0, -30); // shifted up a bit for start button
-      text(gameTitles[gameIndex], width / 2, 100);
+    //pushMatrix();
+    //translate(0, -30); // shifted up a bit for start button
+      textAlign(CENTER, CENTER);
+      textSize(48); fill(255); text(gameTitles[gameIndex], width / 2, height / 6);
       //text(gameDescriptions[gameIndex], width / 2, height - 100, width, height / 5);
       imageMode(CENTER);
       image(gameImages[gameIndex], width / 2, height / 2, width / 2, height / 2);
-    popMatrix();
+    //popMatrix();
     
     // lil webcam inlay
-    drawWebcamMirrored(20, 20, 160, 90);
-    // webcam border
-    strokeWeight(3); stroke(255, 0, 0); noFill(); rectMode(CORNER);
-    rect(20, 20, 160, 90);
+    drawWebcamMirrored(20, 20, 192, 108);
+    rectMode(CORNER); strokeWeight(3); stroke(255, 0, 255); noFill(); rect(20, 20, 192, 108);
     
-    // render buttons
+    // buttons
     leftBtn.draw();
     rightBtn.draw();
     startBtn.draw();
-    helpBtn.draw();
-    settingsBtn.draw();
+    //helpBtn.draw();
+    //settingsBtn.draw();
     //leaderboardBtn.draw();
     
-    if (showOverlay) {
-      fill(0, 0, 0, 150);
-      noStroke();
-      rectMode(CORNER);
-      rect(0, 0, width, height);
+    //if (showOverlay) {
+    //  fill(0, 0, 0, 150);
+    //  noStroke();
+    //  rectMode(CORNER);
+    //  rect(0, 0, width, height);
       
-      rectMode(CENTER);
-      fill(255);
-      stroke(0);
-      rect(width / 2, height / 2, width * .8, height * .8);
-      text("Click anywhere or press any key to exit", width / 2, height * .95);
+    //  rectMode(CENTER);
+    //  fill(255);
+    //  stroke(0);
+    //  rect(width / 2, height / 2, width * .8, height * .8);
+    //  text("Click anywhere or press any key to exit", width / 2, height * .95);
       
-      if (showHelpOverlay) {
-        fill(0);
-        text("instructions", width / 2, height / 2, width * .7, height * .7);
-      } else if (showSettingsOverlay) {
+    //  if (showHelpOverlay) {
+    //    fill(0);
+    //    text("instructions", width / 2, height / 2, width * .7, height * .7);
+    //  } else if (showSettingsOverlay) {
         
-        fill(0);
-        text("settings", width / 2, height / 2, width * .7, height * .7);
-      }
+    //    fill(0);
+    //    text("settings", width / 2, height / 2, width * .7, height * .7);
+    //  }
 
-    }
+    //}
   }
   
   void mousePressed() {
@@ -110,21 +115,22 @@ class HomePage extends Page {
       
     } else if (startBtn.mouseOver()) {
       //String[] gameTitles = {"Pong", "Flappy Bird", "Quiz", "Dodge"};
+      setPage(gamePages[gameIndex]);
       
-      switch(gameIndex) {
-        case 0:
-          setPage(pong);
-          break;
-        case 1:
-          setPage(fbi);
-          break;
-        case 2:
-          setPage(quiz4);
-          break;
-        //case 3:
-        //  setPage(dodge);
-        //  break;
-      }
+      //switch(gameIndex) {
+      //  case 0:
+      //    setPage(pong);
+      //    break;
+      //  case 1:
+      //    setPage(fbi);
+      //    break;
+      //  case 2:
+      //    setPage(quiz4);
+      //    break;
+      //  //case 3:
+      //  //  setPage(dodge);
+      //  //  break;
+      //}
       //println(gameTitles[gameIndex]);
     }
   }

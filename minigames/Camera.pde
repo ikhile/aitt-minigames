@@ -20,6 +20,8 @@ void initCamera(float w, float h)
 }
 
 void drawWebcamMirrored() {
+  if (opencv.getInput() == null) return;
+
   pushMatrix();
   scale(-1, 1);  
     imageMode(CORNER);
@@ -28,6 +30,8 @@ void drawWebcamMirrored() {
 }
 
 void drawWebcamMirrored(int x, int y, int w, int h) {
+  if (opencv.getInput() == null) return;
+  
   pushMatrix();
   scale(-1, 1);
     imageMode(CORNER);
@@ -35,7 +39,7 @@ void drawWebcamMirrored(int x, int y, int w, int h) {
   popMatrix();
 }
 
-void drawRectMirrored(Rectangle rect) {
+void drawRectMirrored(Rectangle rect) {  
   pushMatrix();
   scale(-1, 1);
     rectMode(CORNER); rect(rect.x - width, rect.y, rect.width, rect.height);
