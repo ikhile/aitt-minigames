@@ -9,6 +9,7 @@ StartPage startPage;
 HomePage home;
 FlappyBirdIntro fbi;
 FlappyBird fb;
+FlappyBird2Player fb2;
 DrawPage drawPage;
 Pong pong;
 Quiz4 quiz4;
@@ -38,10 +39,11 @@ void setup() {
   home = new HomePage();
   fbi = new FlappyBirdIntro();
   fb = new FlappyBird();
+  fb2 = new FlappyBird2Player();
   drawPage = new DrawPage();
   pong = new Pong();
   quiz4 = new Quiz4();
-  setPage(fbi);
+  setPage(fb2);
 }
 
 void draw() {

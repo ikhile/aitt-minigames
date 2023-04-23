@@ -3,7 +3,7 @@ class HomePage extends Page {
   RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height - 70, 150, 50);
   RectTextBtn helpBtn = new RectTextBtn("?", width - 35, 35, 50, 50, 15);
   RectTextBtn settingsBtn = new RectTextBtn("Settings", width - 120, 35, 100, 50);
-  RectTextBtn leaderboardBtn = new RectTextBtn("Leaderboard", width - 230, 35, 100, 50);
+  //RectTextBtn leaderboardBtn = new RectTextBtn("Leaderboard", width - 230, 35, 100, 50);
   
   CircleTextBtn leftBtn = new CircleTextBtn("<", width * .2, height / 2, 50);
   CircleTextBtn rightBtn = new CircleTextBtn(">", width * .8, height / 2, 50);
@@ -58,7 +58,7 @@ class HomePage extends Page {
     startBtn.draw();
     helpBtn.draw();
     settingsBtn.draw();
-    leaderboardBtn.draw();
+    //leaderboardBtn.draw();
     
     if (showOverlay) {
       fill(0, 0, 0, 150);
