@@ -166,19 +166,19 @@ class FlappyBird extends Page {
   }
 }
 
-int fbPlayerHeight = 50;
+int fbPlayerHeight = 80;
 
 class FlappyBirdPlayer {
   PImage img;
   int y = width / 2;
   int x = width / 2;
-  int w = fbPlayerHeight;
+  int w = 90;
   int h = fbPlayerHeight;
   int minX;
   int maxX;
   
   FlappyBirdPlayer() {
-    img = loadImage("placeholder.png");
+    img = loadImage("bird-icon.png");
     setMinMaxX();
   }
   
@@ -205,8 +205,8 @@ class FlappyBirdPlayer {
 }
 
 int minGapStartY = 100;
-float minGapMultiplier = 2.0f;
-float maxGapMultiplier = 5.0f;
+float minGapMultiplier = 1.2f;
+float maxGapMultiplier = 3.5f;
 int minObsWidth = 150;
 int maxObsWidth = 250;
 
@@ -251,10 +251,13 @@ class FlappyBirdObstacle {
 class FlappyBirdIntro extends Page {
   RectTextBtn start1Player = new RectTextBtn("1 Player", width / 2 - 80, height / 2 + 170, 150, 80, 10);
   RectTextBtn start2Player = new RectTextBtn("2 Players", width / 2 + 80, height / 2 + 170, 150, 80, 10);
-  
+  RectTextBtn homeBtn = new RectTextBtn("Home", 60, 35, 100, 50);
+
   FlappyBirdIntro() {
     start1Player.setFill(color(255, 255, 255, 150));
     start2Player.setFill(color(255, 255, 255, 150));
+    homeBtn.setColours(color(255, 255, 255, 60), color(255), color(255));
+    homeBtn.setStrokeWeight(3);  
   }
   
   void draw() {
@@ -266,6 +269,7 @@ class FlappyBirdIntro extends Page {
     , width / 2, height / 2);
     start1Player.draw();
     start2Player.draw();
+    homeBtn.draw();
   }
   
   void mousePressed() {
@@ -275,6 +279,10 @@ class FlappyBirdIntro extends Page {
     
     else if (start2Player.mouseOver()) {
       setPage(fb2);
+    }
+    
+    else if (homeBtn.mouseOver()) {
+      setPage(home);
     }
   }
 }

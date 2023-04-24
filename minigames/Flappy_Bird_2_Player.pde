@@ -19,8 +19,8 @@ class FlappyBird2Player extends Page {
   boolean removeObstacle = false;
   
   RectTextBtn playAgain = new RectTextBtn("Play Again", width / 2 + 60, height / 2 + 200, 100, 50);;
-  RectTextBtn homeBtn = new RectTextBtn("Home", width / 2 - 60, height / 2 + 270, 100, 50);
-  RectTextBtn pause = new RectTextBtn("Pause", width - 120, 35, 100, 50);
+  RectTextBtn homeBtn = new RectTextBtn("Home", width / 2 - 60, height / 2 + 200, 100, 50);
+  RectTextBtn pause = new RectTextBtn("Pause", width - 120, 35, 200, 50);
 
   FlappyBirdPlayer player1 = new FlappyBirdPlayer();
   FlappyBirdPlayer player2 = new FlappyBirdPlayer();
@@ -118,7 +118,7 @@ class FlappyBird2Player extends Page {
           
           else if (ob1.hasHitPlayer(player1)) {
             p1Hit = true;
-            updateHighScore(); // actually could leave - if the next player gets higher will auto update
+            updateHighScore();
             updateLeaderboard();
           }
         }
@@ -139,7 +139,7 @@ class FlappyBird2Player extends Page {
           
           else if (ob2.hasHitPlayer(player2)) {
             p2Hit = true;
-            updateHighScore(); // actually could leave - if the next player gets higher will auto update
+            updateHighScore();
             updateLeaderboard();
           }
         }
@@ -165,11 +165,6 @@ class FlappyBird2Player extends Page {
       fill(255); textSize(70);  textAlign(CENTER);
       text(p1Score, width / 4, height * .1);
       text(p2Score, width * .75, height * .1);
-      
-      //if (faces.length <= 1) {
-      //  textSize(24); fill(255); rectMode(CENTER); textAlign(CENTER, CENTER);
-      //  text(faces.length + " face" + (faces.length == 1 ? "" : "s") + " detected\nPlease move your face into the frame\n(or check your lighting)", width / 2, height / 2);
-      //}
       
       textSize(24); fill(255); rectMode(CENTER); textAlign(CENTER, CENTER);
       
@@ -200,7 +195,6 @@ class FlappyBird2Player extends Page {
   
   void addObstacle() {
     if (!p1Hit) {
-      println("adding 2 new");
       obstacles1.add(new FB2Obstacle(1));
       
       obstacles2.add(new FB2Obstacle(1));
@@ -208,7 +202,6 @@ class FlappyBird2Player extends Page {
       ob2.makeObstacle2(obstacles1.get(obstacles1.size() - 1));
       
     } else {
-      println("adding 1 new");
       obstacles2.add(new FB2Obstacle(2));
     }
     

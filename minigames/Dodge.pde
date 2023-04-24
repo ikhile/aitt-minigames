@@ -22,7 +22,6 @@ class Dodge extends Page {
   RectTextBtn startBtn;
   RectTextBtn quitBtn;
   
-  
   int highScore;
   boolean newHighScore = false;
 
@@ -155,11 +154,8 @@ class Dodge extends Page {
         flowPause = false;
       }
       
-      opencv.calculateOpticalFlow();
-      println(opencv.getAverageFlow().x);
-  
       if (!flowPause) {
-        //opencv.calculateOpticalFlow();
+        opencv.calculateOpticalFlow();
         
         if (opencv.getAverageFlow().x > flowSensitivity) {
           player.move('L');

@@ -32,24 +32,20 @@ void getFlowDirection() {
       }
     }
   } else {
-    if (millis() - millisAtPause >= pauseSeconds * 1000) { flowPaused = false; println("flow resumed");  }
+    if (millis() - millisAtPause >= pauseSeconds * 1000) { flowPaused = false;  }
   }
 }
 
 void flowPause() {
   millisAtPause = millis();
   flowPaused = true;
-  println("flow paused");
 }
 
-// technically these shouldn't exist now... just put them into the elses
 void flowLeft() {
-  println("flow left");
    currentPage.flowLeft();
 }
 
 void flowRight() {
-  println("flow right");
    currentPage.flowRight();
 }
 

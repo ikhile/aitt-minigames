@@ -1,15 +1,11 @@
 class Pong extends Page {
   int p1Score;
   int p2Score;
-  int winScore = 11; // testing purposes - set to 11
+  int winScore = 11;
   boolean started, paused, gameOver;
   
   PongPlayer p1, p2;
   PongBall ball;
-  
-  boolean timeout;
-  int timeoutLength;
-  int millisAtTimeout;
   
   Rectangle faces[];
   Rectangle p1Face;
@@ -37,7 +33,6 @@ class Pong extends Page {
     startBtn.setNoFill();
     startBtn.setStrokeWeight(2);
     
-    //pauseBtn.setColours(color(0), color(255), color(255));
     pauseBtn.setStroke(color(255));
     pauseBtn.setTextColour(color(255));
     pauseBtn.setNoFill();
@@ -55,8 +50,6 @@ class Pong extends Page {
     paused = false;
     started = false;
     gameOver = false;
-    timeout = false;
-    millisAtTimeout = 0; // idk // actually might not need to do that at all
     p1.setPos(courtY + courtHeight / 2);
     p2.setPos(courtY + courtHeight / 2);
     ball.reset();
@@ -235,10 +228,9 @@ class Pong extends Page {
   }
   
   void drawFaces() {
-    // player 1 red, player 2 blue
     noFill();
-    if (p1Face != null) {stroke(255, 0, 0); drawRectMirrored(p1Face); }
-    if (p2Face != null) {stroke(0, 0, 255); drawRectMirrored(p2Face); }
+    if (p1Face != null) { stroke(255, 0, 0); drawRectMirrored(p1Face); }
+    if (p2Face != null) { stroke(0, 0, 255); drawRectMirrored(p2Face); }
   }
 }
 
@@ -265,8 +257,6 @@ class PongBall {
     
     ySpeed = int(random(minSpeed, maxSpeed));
     if (random(2) < 1) ySpeed = -ySpeed;
-    
-    println(xSpeed, ySpeed);
   }
   
   boolean hitUDWall() {
@@ -300,7 +290,6 @@ class PongBall {
   
   boolean hitLWall() {
     if (!hitPlayer() && x - d / 2 < pong.courtX) { // left wall
-      println("hit left wall");
       return true;
     } 
     
@@ -309,7 +298,6 @@ class PongBall {
   
   boolean hitRWall() {
     if (!hitPlayer() && x + d / 2 > pong.courtX + pong.courtWidth) {
-      println("hit right wall");
       return true;
     }
     return false;
@@ -340,7 +328,6 @@ class PongPlayer {
   }
   
   void setPos(int y) {
-    //this.x = x;
     switch(playerNum) {
       case 1:
         this.x = 0 + pong.courtX;
@@ -351,18 +338,10 @@ class PongPlayer {
     }
     
     setY(y);
-    //this.y = constrain(y, h / 2, pong.courtHeight - h / 2);
-    //setAbsPos();
   }
   
   void setY(int y) {
     this.y = constrain(y, pong.courtY + h / 2, pong.courtY + pong.courtHeight - h / 2);
-    //setAbsPos();
-  }
-  
-  void setAbsPos() {
-    absX = pong.courtX + x;
-    absY = pong.courtY + y;
   }
 }
 

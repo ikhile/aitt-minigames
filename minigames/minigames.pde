@@ -11,9 +11,8 @@ FlappyBirdIntro fbi;
 FlappyBird fb;
 FlappyBird2Player fb2;
 Pong pong;
-Quiz4 quiz4;
+Quiz4 quiz;
 Dodge dodge;
-
 
 // OpenCV
 OpenCV opencv;
@@ -25,25 +24,26 @@ JSONObject data;
 String dataPath = "data/data.json";
 
 void setup() {
-  //fullScreen();
-  size (1536, 864);
+  fullScreen();
+  //size (1536, 864);
   
   // OpenCV and Camera
   initCamera(width, height);
   opencv = new OpenCV(this, cam.width, cam.height);
-  surface.setResizable(true); // needed?
+  surface.setResizable(true);
   
+  // pages  
   data = loadJSONObject(dataPath);
   fbi = new FlappyBirdIntro();
   fb = new FlappyBird();
   fb2 = new FlappyBird2Player();
   pong = new Pong();
-  quiz4 = new Quiz4();
+  quiz = new Quiz4();
   dodge = new Dodge();
   startPage = new StartPage();
   
   home = new HomePage();
-  setPage(dodge);
+  setPage(startPage);
 }
 
 void draw() {
