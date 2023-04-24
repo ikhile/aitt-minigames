@@ -1,7 +1,10 @@
 {
   "flappy-bird": {
     "high-score": 0,
-    "leaderboard": []
+    "leaderboard": [{
+      "date": "2023-4-24",
+      "score": 0
+    }]
   },
   "dodge": {"high-score": 0}
 }
