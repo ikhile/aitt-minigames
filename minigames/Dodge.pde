@@ -3,7 +3,7 @@ class Dodge extends Page {
   float[] zoneCentres = new float[zones];
   DodgePlayer player;
   int endZoneH = 150;
-  float flowSensitivity = 0.25f;
+  float flowSensitivity = 0.5f;
   boolean flowPause = false;
   int flowPauseMillis = 500;
   int millisAtPause;
@@ -12,7 +12,7 @@ class Dodge extends Page {
   int obsGap;
   int fallSpeed = 25;
   int score;
-  int numHit, maxHits = 1;
+  int numHit, maxHits = 3;
   ArrayList<DodgeObstacle> obstacles = new ArrayList<DodgeObstacle>();
   boolean removeObstacle;
   boolean gameOver;
