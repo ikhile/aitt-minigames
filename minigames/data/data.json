@@ -3,7 +3,5 @@
     "high-score": 0,
     "leaderboard": []
   },
-  "dodge": {
-    "high-score": 0
-  }
+  "dodge": {"high-score": 0}
 }

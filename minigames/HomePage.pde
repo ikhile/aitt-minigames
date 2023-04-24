@@ -2,6 +2,7 @@ class HomePage extends Page {
   RectTextBtn startBtn = new RectTextBtn("Start", width / 2, height * 5 / 6, 150, 50);  
   CircleTextBtn leftBtn = new CircleTextBtn(Character.toString(0x2190), width * .2, height / 2, 80);
   CircleTextBtn rightBtn = new CircleTextBtn(Character.toString(0x2192), width * .8, height / 2, 80);
+  RectTextBtn flowToggle = new RectTextBtn("Turn Movement Controls On/Off", 115, height - 40, 200, 50);
     
   int gameIndex = 0;
   String[] gameTitles = {"Pong", "Flappy Bird", "Quiz", "Dodge"};
@@ -12,6 +13,7 @@ class HomePage extends Page {
   boolean showOverlay = false;
   boolean showHelpOverlay = false;
   boolean showSettingsOverlay = false;
+  boolean flowOn = true;
     
   HomePage() {
     usesFlow = true;
@@ -31,12 +33,15 @@ class HomePage extends Page {
     background(255);
     
     rectMode(CORNER); noStroke(); fill(0, 0, 255, 100); rect(0, 0, width, height);
+
+    textAlign(LEFT); textSize(16); fill(255);
+    if (flowOn) text("You can move from side to side in view of the webcam to scroll through games!", 10, 150, width * .15, height);
+    else text("Movement controls off", 15, height - 70);
     
     // game info
-    textAlign(CENTER, CENTER);
-    textSize(48); fill(255); text(gameTitles[gameIndex], width / 2, height / 6);
     imageMode(CENTER);
     image(gameImages[gameIndex], width / 2, height / 2, width / 2, height / 2);
+    textSize(48); textAlign(CENTER, CENTER); text(gameTitles[gameIndex], width / 2, height / 6);
     
     // lil webcam inlay
     drawWebcamMirrored(20, 20, 192, 108);
@@ -46,6 +51,7 @@ class HomePage extends Page {
     leftBtn.draw();
     rightBtn.draw();
     startBtn.draw();
+    flowToggle.draw();
   }
   
   void mousePressed() {
@@ -65,6 +71,12 @@ class HomePage extends Page {
     } else if (startBtn.mouseOver()) {
       setPage(gamePages[gameIndex]);
     }
+    
+    else if (flowToggle.mouseOver()) {
+      flowOn = !flowOn;
+    }
+      
+    
   }
   
   void keyPressed() {
@@ -88,8 +100,8 @@ class HomePage extends Page {
     }
   }
   
-  void flowLeft() { leftArrow(); }
-  void flowRight() { rightArrow(); }
+  void flowLeft() { if (flowOn) leftArrow(); }
+  void flowRight() { if (flowOn) rightArrow(); }
   void flowUp() {}
   void flowDown() {}
   

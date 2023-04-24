@@ -1,6 +1,6 @@
-float flowSensitivityX = 0.5; // how much movement must be registered for an actual movement to be detected
+float flowSensitivityX = 1.0; // how much movement must be registered for an actual movement to be detected
 float flowSensitivityY = 0.15;
-float pauseSeconds = 0.5; // how long to pause between detecting a movement and detecting the next one
+float pauseSeconds = 0.75; // how long to pause between detecting a movement and detecting the next one
 int millisAtPause;
 boolean flowPaused = false;
 
